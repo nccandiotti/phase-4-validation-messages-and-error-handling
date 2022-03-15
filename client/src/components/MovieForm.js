@@ -1,7 +1,8 @@
-import { useState } from "react";
-import styled from "styled-components";
+import { useState } from "react"
+import styled from "styled-components"
 
 function MovieForm() {
+  const [errors, setErrors] = useState([])
   const [formData, setFormData] = useState({
     title: "",
     year: new Date().getFullYear(),
@@ -12,28 +13,34 @@ function MovieForm() {
     category: "",
     discount: false,
     female_director: false,
-  });
+  })
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    fetch("/movies", {
+  async function handleSubmit(e) {
+    e.preventDefault()
+    // fetch returns a Promise, we must await it
+    const response = await fetch("/movies", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
     })
-      .then((response) => response.json())
-      .then((newMovie) => console.log(newMovie));
+    // response.json() returns a Promise, we must await it
+    const data = await response.json()
+    if (response.ok) {
+      console.log("Movie created:", data)
+    } else {
+      setErrors(data.errors)
+    }
   }
 
   function handleChange(e) {
     const value =
-      e.target.type === "checkbox" ? e.target.checked : e.target.value;
+      e.target.type === "checkbox" ? e.target.checked : e.target.value
     setFormData({
       ...formData,
       [e.target.id]: value,
-    });
+    })
   }
 
   return (
@@ -126,22 +133,31 @@ function MovieForm() {
           </label>
         </FormGroup>
         <SubmitButton type="submit">Add Movie</SubmitButton>
+
+        {errors.length > 0 && (
+          <ul style={{ color: "red" }}>
+            {errors.map((error) => (
+              <li key={error}>{error}</li>
+            ))}
+          </ul>
+        )}
+        <SubmitButton type="submit">Add Movie</SubmitButton>
       </form>
     </Wrapper>
-  );
+  )
 }
 
 const Wrapper = styled.section`
   max-width: 500px;
   margin: 32px auto;
   padding: 32px;
-`;
+`
 
 const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 16px;
-`;
+`
 
 const SubmitButton = styled.button`
   background: blue;
@@ -152,6 +168,6 @@ const SubmitButton = styled.button`
   border: none;
   padding: 8px 16px;
   cursor: pointer;
-`;
+`
 
-export default MovieForm;
+export default MovieForm

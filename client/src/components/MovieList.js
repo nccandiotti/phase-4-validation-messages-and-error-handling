@@ -1,30 +1,32 @@
-import { useEffect, useState } from "react";
-import styled from "styled-components";
-import CategoryFilter from "./CategoryFilter";
-import MovieCard from "./MovieCard";
+import { useEffect, useState } from "react"
+import styled from "styled-components"
+import CategoryFilter from "./CategoryFilter"
+import MovieCard from "./MovieCard"
 
 function MovieList() {
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [movies, setMovies] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("All")
+  const [movies, setMovies] = useState([])
 
   useEffect(() => {
     fetch("/movies")
       .then((r) => r.json())
-      .then((movies) => {
-        setMovies(movies);
-      });
-  }, []);
+      .then((movies) => console.log(movies))
+
+    // .then((movies) => {
+    //   // setMovies(movies)
+    // })
+  }, [])
 
   const categories = movies
     .map((movie) => movie.category)
     .filter(
       (category, index, categories) => categories.indexOf(category) === index
     )
-    .sort();
+    .sort()
 
   const displayedMovies = movies.filter(
     (movie) => selectedCategory === "All" || movie.category === selectedCategory
-  );
+  )
 
   return (
     <Wrapper>
@@ -41,7 +43,7 @@ function MovieList() {
         ))}
       </section>
     </Wrapper>
-  );
+  )
 }
 
 const Wrapper = styled.main`
@@ -51,12 +53,12 @@ const Wrapper = styled.main`
   display: grid;
   gap: 16px;
   grid-template-columns: 200px 1fr;
-`;
+`
 
 const Sidebar = styled.nav`
   position: sticky;
   top: 32px;
   height: 25vh;
-`;
+`
 
-export default MovieList;
+export default MovieList
